@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+  <head>
+   <title>Endereço e CEP</title>
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+   <link rel="shortcut icon" type="image/png" href="https://www.lwsite.com.br/uploads/widget_image/image/770/023/770023/location_icon.png"/>
+   <style>
+   *{
+     padding: 0;
+     margin: 0;
+   }
+
+   body{
+     background-color: #ffffff;
+   }
+   div#box{
+     width: 80%;
+     height: 750px;
+     background-color: #ffffff;
+     position: absolute;
+     top: 5%;
+     left: 10%
+   }
+   div#titulo{
+     background-color: #00004d;
+     position: relative;
+     border-radius: 25px 25px 0 0;
+     padding: 5%;
+   }
+   div#titulo p{
+     font-family: fantasy;
+     font-size: 50pt;
+     text-align: center;
+     color: #ffffff;
+     text-shadow: 1px 1px 0 black;
+   }
+   p#ou{
+     color:#00004d;
+     margin-left: 45%;
+     font-size: 40pt;
+     font-family: fantasy;
+   }
+   div#titulo p img{
+     position: absolute;
+     left: 15%;
+     top: 20%
+   }
+   div#container{
+     padding-top: 5%;
+     background-color: #eaeaea;
+   }
+   div#container fieldset{
+     border: none;
+     height: 800px;
+   }
+   input,label{
+     margin-top: 1%;
+     margin-bottom: 1%;
+     height: 10%;
+     width: 80%;
+     margin-left: 10%;
+   }
+   label{
+     font-size: 20pt;
+     font-family: fantasy;
+     letter-spacing: 3px;
+   }
+   input{
+     font-size: 15pt;
+     padding-left: 1%;
+   }
+   select{
+     height: 10%;
+     width: 81.5%;
+     margin-left: 10%;
+     font-size: 15pt;
+     padding-left: 1%;
+     margin-top: 1%;
+   }
+   button{
+     cursor: pointer;
+     width: 35%;
+     height: 10%;
+     margin-top: .5%;
+     margin-left: 10.25%;
+     font-size: 20pt;
+     font-family: fantasy;
+     letter-spacing: 3px;
+     color: #ffffff;
+     text-shadow: 1px 1px 0 black;
+     background-color: #00004d;
+     border: none;
+   }
+   </style>
+   <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+   <script type="text/javascript" >
+   function desliga(a){
+     if(a == 1){
+       document.getElementById('rua').disabled = true;
+       document.getElementById('cidade').disabled = true;
+     } else if(a ==2) {
+       document.getElementById('cep').disabled = true;
+     } else {
+       document.getElementById('rua').disabled = false;
+       document.getElementById('cidade').disabled = false;
+       document.getElementById('cep').disabled = false;
+     }
+   }
+    $(document).ready(function() {
+      function limparFormulario(){
+        $('#cep').val("");
+        $('#rua').val("");
+        $('#cidade').val("");
+        $('#uf').val("");
+      }
+      $('#limpar').on("click", function(){
+        limparFormulario();
+        desliga(3);
+      });
+      $("#descobrir").on("click", function(){
+        desliga(3);
+        var cep = $('#cep').val().replace(/\D/g, '');
+        var uf = $('#uf').val();
+        var cidade = $('#cidade').val();
+        var rua = $('#rua').val();
+        if($("#cep").val()==""){
+          $("#cep").val("...");
+          $.getJSON("https://viacep.com.br/ws/" + uf + "/" + cidade + "/" + rua + "/json", function(dados){
+                $("#cep").val(dados[0].cep);
+          });
+        } else {
+          var validacep = /^[0-9]{8}$/;
+          if(validacep.test(cep)){
+            $("#rua").val("...");
+            $("#cidade").val("...");
+            $("#uf").val("...");
+            $.getJSON("https://viacep.com.br/ws/" + cep + "/json/?callback=", function(dados) {
+              $("#rua").val(dados.logradouro);
+              $("#cidade").val(dados.localidade);
+              $("#uf").val(dados.uf);
+            });
+          } else {
+            alert("CEP com valor inválido");
+            limparFormulario();
+            }
+          }
+     });
+});
+   </script>
+  </head>
+   <body>
+     <div id="box">
+       <div id="titulo">
+         <p><img src="https://image.ibb.co/mppM26/logo.png" width="100px;" height="100px;">Endereço e CEP</p>
+       </div>
+        <div id="container">
+         <fieldset>
+           <label>CEP<br/>
+           <input name="cep" type="text" id="cep" value="" size="10" maxlength="9" placeholder="Seu CEP é..." onclick="desliga(1)"/></label><br />
+           <p id="ou">OU</p>
+           <label>Rua<br/>
+           <input name="rua" type="text" id="rua" size="60" placeholder="Sua rua é..."onclick="desliga(2)"/></label><br />
+           <label>Cidade<br/>
+           <input name="cidade" type="text" id="cidade" size="40"  placeholder="Sua cidade é..." onclick="desliga(2)"/></label><br />
+           <label>Estado<br/>
+           <select id="uf">
+              <option value="" disabled selected>Seu estado é...</option>
+              <option value="AC">Acre</option>
+            	<option value="AL">Alagoas</option>
+            	<option value="AP">Amapá</option>
+            	<option value="AM">Amazonas</option>
+            	<option value="BA">Bahia</option>
+            	<option value="CE">Ceará</option>
+            	<option value="DF">Distrito Federal</option>
+            	<option value="ES">Espírito Santo</option>
+            	<option value="GO">Goiás</option>
+            	<option value="MA">Maranhão</option>
+            	<option value="MT">Mato Grosso</option>
+            	<option value="MS">Mato Grosso do Sul</option>
+            	<option value="MG">Minas Gerais</option>
+            	<option value="PA">Pará</option>
+            	<option value="PB">Paraíba</option>
+            	<option value="PR">Paraná</option>
+            	<option value="PE">Pernambuco</option>
+            	<option value="PI">Piauí</option>
+            	<option value="RJ">Rio de Janeiro</option>
+            	<option value="RN">Rio Grande do Norte</option>
+            	<option value="RS">Rio Grande do Sul</option>
+            	<option value="RO">Rondônia</option>
+            	<option value="RR">Roraima</option>
+            	<option value="SC">Santa Catarina</option>
+            	<option value="SP">São Paulo</option>
+            	<option value="SE">Sergipe</option>
+            	<option value="TO">Tocantins</option>
+           </select><br/></label><br/>
+           <button type="submit" id="descobrir">Pesquisar</button>
+           <button type="submit" id="limpar">Limpar</button>
+          </fieldset>
+        </div>
+      </div>
+  </body>
+</html>
